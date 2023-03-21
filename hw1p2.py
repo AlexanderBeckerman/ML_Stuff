@@ -20,22 +20,33 @@ test_labels = labels[idx[10000:10050]]
 
 def getLabel(images, labels_vec, query, k):
     nearest = np.empty(k)
+    distances = np.empty(labels_vec.size)
     labels = np.empty(k)
     nearest.fill(math.inf)
     imgindex = 0
+    # for img in images:
+    #     distance = np.linalg.norm(query - img)
+    #     if (imgindex < k):
+    #         nearest[imgindex] = distance
+    #         labels[imgindex] = labels_vec[imgindex]
+    #         imgindex += 1
+    #         continue
+    #
+    #     for index, d in np.ndenumerate(nearest):
+    #         if (distance < d):
+    #             nearest[index] = distance
+    #             labels[index] = labels_vec[imgindex]
+    #             break
+    #
+
     for img in images:
         distance = np.linalg.norm(query - img)
-        if (imgindex < k):
-            nearest[imgindex] = distance
-            labels[imgindex] = labels_vec[imgindex]
-            imgindex += 1
-            continue
-        for index, d in np.ndenumerate(nearest):
-            if (distance < d):
-                nearest[index] = distance
-                labels[index] = labels_vec[imgindex]
-                break
+        distances[imgindex] = distance
         imgindex += 1
+    for i in range(k):
+        min = np.argmin(distances)
+        labels[i] = labels_vec[min]
+        distances[min] = math.inf
 
     return np.bincount(labels.astype(int)).argmax()
 
