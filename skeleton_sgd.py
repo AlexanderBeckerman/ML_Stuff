@@ -79,7 +79,7 @@ def SGD_log(data, labels, eta_0, T):
 #################################
 
 def q1_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, C, T):
-    scale = np.logspace(-5, 5, 10)
+    scale = [10 ** i for i in range(-5, 5)]
     avg_acc = []
     for eta_0 in scale:
         acc_sum = 0
@@ -169,7 +169,7 @@ def q1d_test(train_data, train_labels, test_data, test_labels, C, eta_0, T):
 
 
 def q2a_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, T):
-    scale = np.logspace(-1, 1, 10)
+    scale = [10 ** i for i in range(-8, -2)]
     avg_acc = []
     for eta_0 in scale:
         acc_sum = 0
@@ -192,12 +192,13 @@ def q2a_find_best_eta_0(validation_data, validation_labels, train_data, train_la
 
     plt.xlabel("eta_0 Values")
     plt.ylabel("Avg Accuracy")
+    plt.xscale("log")
     plt.plot(scale, avg_acc)
     plt.legend()
     plt.show()
 
     best_eta_0 = scale[np.argmax(avg_acc)]
-    print(f"best eta_0 is {best_eta_0} with accuracy of {avg_acc[np.argmax(avg_acc)]}")
+    print(f"best eta_0 is {best_eta_0:.8f} with accuracy of {avg_acc[np.argmax(avg_acc)]}")
     return best_eta_0
 
 
@@ -220,9 +221,24 @@ def q2b(train_data, train_labels, test_data, test_labels, eta_0, T):
     return acc
 
 
-def q2c(train_data, train_labels, eta_0, T):
-    pass
+def q2c(data, labels, eta_0, T):
 
+    norms = []
+    w = np.zeros(data.shape[1])
+    for t in range(1, T + 1):
+        i = np.random.choice(data.shape[0], 1)[0]
+        eta_t = eta_0 / t
+        w = w - eta_t * -(
+                pow(math.e, -labels[i] * np.dot(w, data[i])) / (1 + pow(math.e, -labels[i] * np.dot(w, data[i])))) * \
+            labels[i] * data[i]
+        norms.append(np.linalg.norm(w))
+
+    x_axis = np.arange(1, T + 1)
+    plt.xlabel("iteration")
+    plt.ylabel("norm")
+    plt.plot(x_axis, np.array(norms))
+    plt.legend()
+    plt.show()
 
 def main():
     train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper()
@@ -231,7 +247,7 @@ def main():
     # q1c_train(train_data, train_labels, best_C, best_eta_0, 20000)
     # q1d_test(train_data, train_labels, test_data, test_labels, best_C, best_eta_0, 20000)
     eta = q2a_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, 1000)
-
-
+    # acc = q2b(train_data, train_labels, test_data, test_labels, eta, 20000)
+    q2c(train_data, train_labels, eta, 20000)
 if __name__ == '__main__':
     main()
