@@ -61,7 +61,14 @@ def SGD_log(data, labels, eta_0, T):
     """
     Implements SGD for log loss.
     """
-    pass
+    w = np.zeros(data.shape[1])
+    for t in range(1, T + 1):
+        i = np.random.choice(data.shape[0], 1)[0]
+        eta_t = eta_0 / t
+        w = w - eta_t * -(
+                pow(math.e, -labels[i] * np.dot(w, data[i])) / (1 + pow(math.e, -labels[i] * np.dot(w, data[i])))) * labels[i] * data[i]
+
+    return w
     # return w
 
 
@@ -72,7 +79,7 @@ def SGD_log(data, labels, eta_0, T):
 #################################
 
 def q1_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, C, T):
-    scale = np.logspace(-1, 1, 10)
+    scale = np.logspace(-5, 5, 10)
     avg_acc = []
     for eta_0 in scale:
         acc_sum = 0
@@ -162,7 +169,7 @@ def q1d_test(train_data, train_labels, test_data, test_labels, C, eta_0, T):
 
 
 def q2a_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, T):
-    scale = np.logspace(-5, 5, 10)
+    scale = np.logspace(-1, 1, 10)
     avg_acc = []
     for eta_0 in scale:
         acc_sum = 0
@@ -212,16 +219,18 @@ def q2b(train_data, train_labels, test_data, test_labels, eta_0, T):
     print(f"best classifier accuracy is {acc}")
     return acc
 
+
 def q2c(train_data, train_labels, eta_0, T):
+    pass
 
 
 def main():
-    pass
-    # train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper()
+    train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper()
     # best_eta_0 = q1_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, 1, 1000)
     # best_C = q1b_find_best_c(validation_data, validation_labels, train_data, train_labels, best_eta_0, 1000)
     # q1c_train(train_data, train_labels, best_C, best_eta_0, 20000)
     # q1d_test(train_data, train_labels, test_data, test_labels, best_C, best_eta_0, 20000)
+    eta = q2a_find_best_eta_0(validation_data, validation_labels, train_data, train_labels, 1000)
 
 
 if __name__ == '__main__':
